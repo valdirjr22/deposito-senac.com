@@ -61,8 +61,8 @@
             color: white; padding: 12px 20px; 
             border: none; border-radius: 6px; cursor: pointer; 
             margin-top: 20px; font-size: 16px; 
-            transition: background-color 0.3s, transform 0.1s; 
             font-weight: bold;
+            transition: background-color 0.3s, transform 0.1s; 
         }
         .btn-principal:hover { background-color: #e65c00; transform: translateY(-1px); }
 
@@ -82,8 +82,8 @@
             border-radius: 6px 6px 0 0; 
             cursor: pointer; 
             margin-left: 5px; 
-            transition: background-color 0.3s, color 0.3s; 
             font-weight: 600;
+            transition: background-color 0.3s, color 0.3s; 
         }
         .nav-button:hover:not(.active) { background-color: #e9ecef; }
         .nav-button.active { 
@@ -222,6 +222,7 @@
                     <th>Tombamento</th>
                     <th>Status</th>
                     <th>Localização Atual</th>
+                    <th>Última Atualização</th> 
                 </tr>
             </thead>
             <tbody>
@@ -263,7 +264,7 @@
             <label>Data e Hora do Empréstimo:</label>
             <input type="text" id="emprestimo_datahora" readonly style="background-color: #f8f9fa;">
 
-            <label for="emprestimo_previsao">Previsão de Devolução:</label>
+            <label for="emprestimo_previsao">Previsão de Devolução (Apenas Data):</label>
             <input type="date" id="emprestimo_previsao" required>
 
             <button type="submit" class="btn-principal">Registrar e Imprimir Termo</button>
@@ -396,6 +397,7 @@
             } else if (secao === 'emprestimo') {
                 document.getElementById('secaoEmprestimo').style.display = 'block';
                 document.getElementById('btnEmprestimo').classList.add('active');
+                // Garante que a data e hora é atualizada ao abrir a seção
                 document.getElementById('emprestimo_datahora').value = new Date().toLocaleString('pt-BR');
             }
         }
@@ -417,18 +419,50 @@
         // --- Lógica das Tabelas (Histórico e Gerenciar) ---
         function carregarTabelaHistorico() {
             const equipamentos = getEquipamentos();
+            const emprestimos = getEmprestimos(); // Pega todos os empréstimos
             const tbody = document.querySelector('#tabelaHistorico tbody');
             if (!tbody) return; 
 
             tbody.innerHTML = ''; 
 
             equipamentos.forEach(equipamento => {
-                const row = tbody.insertRow(); // Linha da Tabela
+                const row = tbody.insertRow();
                 
+                // 1. Encontrar a Última Movimentação
+                // Filtra empréstimos por este equipamento
+                const movimentos = emprestimos.filter(e => e.tombamento === equipamento.patrimonio);
+                
+                let dataUltimaAtualizacao = equipamento.dataCadastro; // Começa com a data de cadastro
+
+                // Verifica se há um empréstimo ou devolução mais recente
+                if (movimentos.length > 0) {
+                    movimentos.forEach(mov => {
+                        // Compara a data de empréstimo (Emissão)
+                        if (mov.dataEmprestimo) {
+                            const dataEmprestimo = new Date(mov.dataEmprestimo);
+                            const dataCadastro = new Date(dataUltimaAtualizacao.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'));
+                            if (dataEmprestimo > dataCadastro) {
+                                dataUltimaAtualizacao = mov.dataEmprestimo;
+                            }
+                        }
+                        // Compara a data de devolução (Finalizado)
+                        if (mov.dataDevolucao) {
+                            const dataDevolucao = new Date(mov.dataDevolucao);
+                            const dataAtualizacao = new Date(dataUltimaAtualizacao);
+                            if (dataDevolucao > dataAtualizacao) {
+                                dataUltimaAtualizacao = mov.dataDevolucao;
+                            }
+                        }
+                    });
+                }
+                
+                // 2. Cria as Células da Tabela
                 row.insertCell().textContent = equipamento.nome;
                 row.insertCell().textContent = equipamento.patrimonio;
                 row.insertCell().innerHTML = getStatusHtml(equipamento.status);
                 row.insertCell().textContent = equipamento.localizacao;
+                // Exibe a data de última atualização (com hora, se houver)
+                row.insertCell().textContent = dataUltimaAtualizacao; 
             });
         }
         
@@ -487,7 +521,8 @@
                     localizacao: document.getElementById('localizacao').value, 
                     status: document.getElementById('status').value,
                     obs: document.getElementById('obs').value.trim(),
-                    dataCadastro: new Date().toLocaleDateString('pt-BR')
+                    // Data de Cadastro agora é com hora
+                    dataCadastro: new Date().toLocaleString('pt-BR') 
                 };
 
                 equipamentos.push(novoEquipamento);
@@ -514,6 +549,7 @@
                  
                  // Marca o empréstimo como inativo (finalizado)
                  let emprestimos = getEmprestimos();
+                 // Busca o último empréstimo ATIVO para este tombamento
                  const emprestimoIndex = emprestimos.slice().reverse().findIndex(e => e.tombamento === patrimonio && e.status === 'Ativo');
                  
                  if (emprestimoIndex !== -1) {
@@ -526,6 +562,7 @@
 
                  alert(`Devolução do equipamento ${patrimonio} registrada. Status atualizado para ESTOQUE.`);
                  carregarTabelaGerenciar();
+                 carregarTabelaHistorico(); // Atualiza o histórico
              }
         }
         
@@ -561,11 +598,20 @@
                 event.preventDefault();
 
                 if (equipamentoSendoEditado) {
+                    // Se o status mudar, atualizamos a data de atualização
+                    const statusAntigo = equipamentoSendoEditado.status;
+                    const statusNovo = document.getElementById('editStatus').value;
+                    
                     equipamentoSendoEditado.nome = document.getElementById('editNome').value;
                     equipamentoSendoEditado.patrimonio = document.getElementById('editPatrimonio').value.trim();
                     equipamentoSendoEditado.localizacao = document.getElementById('editLocalizacao').value;
-                    equipamentoSendoEditado.status = document.getElementById('editStatus').value;
+                    equipamentoSendoEditado.status = statusNovo;
                     equipamentoSendoEditado.obs = document.getElementById('editObs').value.trim();
+
+                    if (statusAntigo !== statusNovo) {
+                         // Adiciona a data/hora da última alteração de status/localização
+                        equipamentoSendoEditado.dataCadastro = new Date().toLocaleString('pt-BR'); 
+                    }
 
                     const equipamentos = getEquipamentos();
                     const index = equipamentos.findIndex(e => e.id === equipamentoSendoEditado.id);
@@ -575,6 +621,7 @@
                         saveEquipamentos(equipamentos);
                         
                         carregarTabelaGerenciar();
+                        carregarTabelaHistorico(); // Atualiza o histórico
                         fecharModal();
                         alert('Equipamento atualizado com sucesso!');
                     }
@@ -589,6 +636,7 @@
                 
                 saveEquipamentos(equipamentos);
                 carregarTabelaGerenciar(); 
+                carregarTabelaHistorico(); // Atualiza o histórico
                 alert('Equipamento excluído.');
             }
         }
@@ -604,7 +652,7 @@
                 const nomeFuncionario = document.getElementById('emprestimo_nome').value.trim();
                 const matricula = document.getElementById('emprestimo_matricula').value.trim();
                 const ocupacao = document.getElementById('emprestimo_ocupacao').value.trim();
-                const dataHora = document.getElementById('emprestimo_datahora').value;
+                const dataHora = document.getElementById('emprestimo_datahora').value; 
                 const previsaoDevolucao = document.getElementById('emprestimo_previsao').value;
                 
                 // 1. Validar Equipamento
@@ -633,7 +681,7 @@
                     funcionario: nomeFuncionario,
                     matricula: matricula,
                     ocupacao: ocupacao,
-                    dataEmprestimo: dataHora,
+                    dataEmprestimo: dataHora, 
                     previsaoDevolucao: previsaoDevolucao,
                     status: 'Ativo'
                 };
@@ -646,6 +694,7 @@
                 // 4. Atualizar Status do Equipamento Principal
                 equipamento.status = 'Emprestado';
                 equipamento.localizacao = `Emprestado para ${nomeFuncionario}`;
+                equipamento.dataCadastro = dataHora; // Atualiza a data de última movimentação
                 saveEquipamentos(equipamentos);
 
                 // 5. Gerar Impressão
@@ -654,6 +703,8 @@
                 alert(`Empréstimo de "${equipamento.nome}" para ${nomeFuncionario} registrado com sucesso!`);
                 emprestimoForm.reset();
                 document.getElementById('emprestimo_datahora').value = new Date().toLocaleString('pt-BR'); 
+                carregarTabelaHistorico(); // Atualiza o histórico
+                carregarTabelaGerenciar(); // Atualiza as ações
             });
         }
         
@@ -673,6 +724,11 @@
 
         // --- Função de Impressão (Geral) ---
         function gerarImpressao(dadosEmprestimo) {
+            // Formata a data de previsão (que é só data) para exibição
+            const dataPrevisaoFormatada = new Date(dadosEmprestimo.previsaoDevolucao + 'T00:00:00').toLocaleDateString('pt-BR');
+            // A data de empréstimo já é armazenada com hora
+            const dataEmprestimoFormatada = dadosEmprestimo.dataEmprestimo;
+            
             const termoHtml = `
                 <div class="termo-impressao" style="padding: 30px; line-height: 1.8;">
                     <div class="cabecalho-print">SENAC - PAULISTA</div>
@@ -689,10 +745,12 @@
                         <tr>
                             <td style="border: 1px solid #000; padding: 10px;">${dadosEmprestimo.nome}</td>
                             <td style="border: 1px solid #000; padding: 10px;">${dadosEmprestimo.tombamento}</td>
-                            <td style="border: 1px solid #000; padding: 10px;">${new Date(dadosEmprestimo.previsaoDevolucao).toLocaleDateString('pt-BR')}</td>
+                            <td style="border: 1px solid #000; padding: 10px;">${dataPrevisaoFormatada}</td>
                         </tr>
                     </table>
 
+                    <p><strong>Registro de Empréstimo:</strong> O equipamento foi retirado em <strong>${dataEmprestimoFormatada}</strong>.</p>
+                    
                     <p style="margin-top: 30px;"><strong>Condições:</strong> Declaro estar ciente das responsabilidades de uso, conservação e devolução do item em perfeitas condições. Em caso de dano, perda ou furto, o funcionário será responsável pela substituição integral do bem.</p>
                     
                     <br><br><br>
@@ -708,13 +766,13 @@
                         </tr>
                     </table>
 
-                    <p style="text-align: right; margin-top: 20px; font-size: 0.9em;">Emissão: ${dadosEmprestimo.dataEmprestimo}</p>
+                    <p style="text-align: right; margin-top: 20px; font-size: 0.9em;">Emissão: ${dataEmprestimoFormatada}</p>
                     
                     <br><br>
                     
                     <div class="assinaturas-devolucao">
                         <h3 style="text-align: center; color: #000; margin-bottom: 25px;">REGISTRO DE DEVOLUÇÃO</h3>
-                        <p>Declaro que o equipamento foi devolvido na data: _____ / _____ / _________ </p>
+                        <p>Declaro que o equipamento foi devolvido na data e hora: _____ / _____ / _________ às ______:______</p>
                         <p>Observações sobre o estado do equipamento (se houver): ____________________________________________________________________</p>
                         <br>
                         <table style="width: 100%;">
