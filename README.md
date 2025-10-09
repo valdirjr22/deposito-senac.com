@@ -423,7 +423,7 @@
             tbody.innerHTML = ''; 
 
             equipamentos.forEach(equipamento => {
-                const row = tbody.insertCell();
+                const row = tbody.insertRow(); // <-- CORRIGIDO AQUI!
                 
                 row.insertCell().textContent = equipamento.nome;
                 row.insertCell().textContent = equipamento.patrimonio;
@@ -671,7 +671,7 @@
             }
         };
 
-        // --- Função de Impressão (Geral - ATUALIZADA com cabeçalho) ---
+        // --- Função de Impressão (Geral) ---
         function gerarImpressao(dadosEmprestimo) {
             const termoHtml = `
                 <div class="termo-impressao" style="padding: 30px; line-height: 1.8;">
