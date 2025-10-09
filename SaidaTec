@@ -423,7 +423,7 @@
             tbody.innerHTML = ''; 
 
             equipamentos.forEach(equipamento => {
-                const row = tbody.insertRow(); // <-- CORRIGIDO AQUI!
+                const row = tbody.insertRow(); // Linha da Tabela
                 
                 row.insertCell().textContent = equipamento.nome;
                 row.insertCell().textContent = equipamento.patrimonio;
