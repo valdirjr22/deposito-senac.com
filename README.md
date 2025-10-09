@@ -1,18 +1,27 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Controle de Equipamentos - V6 (Reimprimir Termo)</title>
+    <title>SENAC - PAULISTA | Controle de Equipamentos e Materiais</title>
     <style>
+        /* Variáveis de Cores SENAC/Sistema */
+        :root {
+            --primary-blue: #0056b3; /* Azul Escuro */
+            --secondary-orange: #ff6600; /* Laranja SENAC */
+            --light-bg: #f8f9fa; /* Branco Sujo / Off-White */
+            --white: #ffffff;
+            --text-dark: #343a40;
+        }
+
         /* Estilos Comuns e Reset */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 0; 
-            background-color: #e9ecef; /* Fundo suave */
-            color: #343a40;
+            background-color: var(--light-bg); 
+            color: var(--text-dark);
         }
         .container { 
-            background-color: #ffffff; /* Fundo branco para conteúdo */
+            background-color: var(--white); 
             padding: 30px; 
             border-radius: 12px; 
             box-shadow: 0 6px 12px rgba(0,0,0,0.1); 
@@ -20,20 +29,20 @@
             max-width: 1000px;
         }
         h1 { 
-            color: #0056b3; /* Azul mais escuro para cabeçalho principal */
+            color: var(--primary-blue);
             text-align: center; 
             margin-bottom: 25px; 
-            border-bottom: 2px solid #007bff;
+            border-bottom: 3px solid var(--secondary-orange); /* Destaque Laranja */
             padding-bottom: 10px;
         }
         h2 {
-            color: #495057;
+            color: var(--primary-blue);
             border-bottom: 1px solid #dee2e6;
             padding-bottom: 10px;
         }
         
         /* Estilos de Formulário */
-        label { display: block; margin-top: 15px; font-weight: 600; color: #495057; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: var(--text-dark); }
         input, select, textarea { 
             width: 100%; padding: 10px; margin-top: 5px; 
             box-sizing: border-box; border: 1px solid #ced4da; 
@@ -41,21 +50,21 @@
             transition: border-color 0.3s;
         }
         input:focus, select:focus, textarea:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
             outline: none;
         }
         
         /* Estilos dos Botões Principais */
         .btn-principal { 
-            background-color: #28a745; /* Verde vibrante */
+            background-color: var(--secondary-orange); /* Laranja SENAC */
             color: white; padding: 12px 20px; 
             border: none; border-radius: 6px; cursor: pointer; 
             margin-top: 20px; font-size: 16px; 
             transition: background-color 0.3s, transform 0.1s; 
             font-weight: bold;
         }
-        .btn-principal:hover { background-color: #1e7e34; transform: translateY(-1px); }
+        .btn-principal:hover { background-color: #e65c00; transform: translateY(-1px); }
 
         /* Estilos dos Botões de Navegação (Aba) */
         .nav-bar { 
@@ -65,8 +74,8 @@
             border-bottom: 2px solid #dee2e6;
         }
         .nav-button { 
-            background-color: #f8f9fa; /* Fundo claro para abas inativas */
-            color: #495057; 
+            background-color: var(--light-bg); 
+            color: var(--primary-blue); 
             padding: 10px 20px; 
             border: 1px solid #dee2e6; 
             border-bottom: none;
@@ -78,16 +87,16 @@
         }
         .nav-button:hover:not(.active) { background-color: #e9ecef; }
         .nav-button.active { 
-            background-color: #ffffff; /* Fundo branco para a aba ativa */
-            color: #007bff; /* Texto azul para a aba ativa */
-            border-bottom: 2px solid #ffffff; /* Esconde a linha de baixo */
-            margin-bottom: -2px; /* Ajuste para sobrepor a borda */
+            background-color: var(--white); 
+            color: var(--secondary-orange); /* Laranja na aba ativa */
+            border-bottom: 2px solid var(--white); 
+            margin-bottom: -2px; 
         }
 
         /* Estilos da Tabela */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; font-size: 0.9em; }
-        th { background-color: #e9ecef; color: #495057; font-weight: 700; }
+        th { background-color: var(--light-bg); color: var(--primary-blue); font-weight: 700; }
         
         /* Estilos dos botões de ação na tabela */
         .btn-acao { 
@@ -97,11 +106,11 @@
             transition: opacity 0.2s;
         }
         .btn-acao:hover { opacity: 0.8; }
-        .btn-editar { background-color: #ffc107; color: #333; } /* Amarelo */
-        .btn-excluir { background-color: #dc3545; } /* Vermelho */
-        .btn-emprestar { background-color: #007bff; } /* Azul */
-        .btn-devolver { background-color: #20c997; } /* Verde Água */
-        .btn-reimprimir { background-color: #6c757d; } /* Cinza (Reimprimir) */
+        .btn-editar { background-color: #ffc107; color: #333; } 
+        .btn-excluir { background-color: #dc3545; } 
+        .btn-emprestar { background-color: var(--primary-blue); } 
+        .btn-devolver { background-color: #20c997; } 
+        .btn-reimprimir { background-color: #6c757d; } 
 
         /* Cores de Status na Tabela */
         .status-cell { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; }
@@ -111,18 +120,15 @@
         .status-baixas { background-color: #e2e3e5; color: #495057; border: 1px solid #d6d8db; } 
         .status-emuso { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; } 
 
-
-        /* Estilos para o Modal de Edição (manter o mesmo) */
+        /* Modal e Impressão (Manteve-se) */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
         .modal-content { background-color: #fefefe; margin: 5% auto; padding: 25px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 80%; max-width: 550px; border-radius: 8px; }
         .close { color: #aaa; float: right; font-size: 32px; font-weight: bold; }
         .close:hover, .close:focus { color: #333; text-decoration: none; cursor: pointer; }
-        #editForm button { width: 100%; margin-top: 15px; }
 
-        /* Esconde as seções que não são a inicial */
         #secaoHistorico, #secaoGerenciar, #secaoEmprestimo { display: none; }
         
-        /* Estilos para o Termo de Empréstimo (Impressão) */
+        /* Estilos de Impressão (Marca d'água adicionada) */
         @media print {
             body { background: none; }
             .container, .nav-bar, .modal { display: none !important; }
@@ -134,6 +140,25 @@
                 color: #000;
                 display: block !important;
                 page-break-after: always;
+                position: relative; /* Necessário para posicionar a marca d'água */
+                overflow: hidden; /* Garante que a marca d'água não vaze */
+            }
+            .assinaturas-devolucao { margin-top: 50px; border-top: 2px solid #000; padding-top: 20px;}
+            .assinaturas-devolucao p { margin: 5px 0; }
+            .cabecalho-print { text-align: center; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; }
+
+            /* MARCA D'ÁGUA */
+            .termo-impressao::before {
+                content: "SENAC PAULISTA";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg); /* Centraliza e rotaciona */
+                font-size: 4em; /* Tamanho grande */
+                color: rgba(0, 0, 0, 0.08); /* Cor cinza bem clara e transparente */
+                pointer-events: none; /* Impede que a marca d'água interfira com a seleção de texto */
+                white-space: nowrap; /* Impede que o texto quebre linha */
+                z-index: -1; /* Coloca a marca d'água atrás do conteúdo */
             }
         }
     </style>
@@ -141,7 +166,7 @@
 <body>
 
     <div class="container" style="padding-bottom: 0; margin-bottom: 0; max-width: 900px;">
-        <h1>Controle de Materiais de Informática</h1>
+        <h1>Controle de Equipamentos e Materiais - SENAC - PAULISTA</h1>
 
         <div class="nav-bar">
             <button class="nav-button active" id="btnCadastro" onclick="mudarSecao('cadastro')">
@@ -163,13 +188,15 @@
         <h2>Cadastrar Novo Equipamento</h2>
         <form id="cadastroForm">
             <label for="nome">Nome do Equipamento:</label>
-            <input type="text" id="nome" required placeholder="Ex: Notebook Dell Latitude">
+            <select id="nome" required>
+                </select>
 
             <label for="patrimonio">Nº de Tombamento/Série (Chave Única):</label>
             <input type="text" id="patrimonio" required placeholder="Ex: PATR-00123 ou Serial XYZ">
 
             <label for="localizacao">Localização Inicial:</label>
-            <input type="text" id="localizacao" required placeholder="Ex: Estoque Principal">
+            <select id="localizacao" required>
+                </select>
             
             <label for="status">Status:</label>
             <select id="status" required>
@@ -251,13 +278,15 @@
                 <input type="hidden" id="editId">
                 
                 <label for="editNome">Nome:</label>
-                <input type="text" id="editNome" required>
+                <select id="editNome" required>
+                    </select>
                 
                 <label for="editPatrimonio">Tombamento:</label>
                 <input type="text" id="editPatrimonio" required>
                 
                 <label for="editLocalizacao">Localização:</label>
-                <input type="text" id="editLocalizacao" required>
+                <select id="editLocalizacao" required>
+                    </select>
                 
                 <label for="editStatus">Status:</label>
                 <select id="editStatus" required>
@@ -280,6 +309,46 @@
     <script>
         // Variável de controle global para o modal de edição
         let equipamentoSendoEditado = null; 
+        
+        // --- Listas de Seleção Personalizadas ---
+        const listaNomesEquipamentos = [
+            'Not Gamer Dell', 'Not Book Dell', 'Not Book Dell Vastro', 'Data show', 
+            'Mini Pc Dell', 'Oculos VR Meta', 'Impressora 3D', 'Impressora Laser',
+            'Pc Gabinete Positivo', 'Monitor Positivo', 'Monitor Dell', 'Not Book HP',
+            'Crome Book', 'Smart TV'
+        ];
+        
+        const listaLocalizacoes = [
+            'Biblioteca', 'Sala Maker', 'Sala Nova', 'Sala 01', 'Sala 02', 'Sala 03', 
+            'Sala 04', 'Sala 05', 'Sala 06', 'Sala 07', 'Sala 08', 'Sala 09', 'Sala 10', 
+            'Sala 11', 'Sala 12', 'Sala Financeiro', 'Secretaria', 'CAS (Recepção)', 
+            'Copa', 'Gerência', 'Coordenação', 'Sala Dos professores', 'Sala Maker Nova', 
+            'Sala de Inovação', 'Cozinha Didática', 'Auditório', 'Sala do Administrativo', 
+            'Sala de Vidro', 'Salão Escola', 'Estoque Principal' 
+        ];
+        
+        // --- Funções Auxiliares de População de Select ---
+        function populateSelect(selectId, optionsList, selectedValue = null) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            select.innerHTML = '';
+            
+            // Adicionar opção vazia
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Selecione --';
+            select.appendChild(defaultOption);
+
+            optionsList.forEach(optionText => {
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                if (optionText === selectedValue) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
         
         // --- Funções de Persistência (LocalStorage) ---
 
@@ -312,6 +381,10 @@
             if (secao === 'cadastro') {
                 document.getElementById('secaoCadastro').style.display = 'block';
                 document.getElementById('btnCadastro').classList.add('active');
+                // Popula os selects no cadastro
+                populateSelect('nome', listaNomesEquipamentos);
+                populateSelect('localizacao', listaLocalizacoes);
+                document.getElementById('status').value = 'Estoque';
             } else if (secao === 'historico') {
                 document.getElementById('secaoHistorico').style.display = 'block';
                 document.getElementById('btnHistorico').classList.add('active');
@@ -341,7 +414,7 @@
             return `<span class="status-cell ${statusClass}">${status}</span>`;
         }
 
-        // --- Lógica da Seção de Histórico (Visualização) ---
+        // --- Lógica das Tabelas (Histórico e Gerenciar) ---
         function carregarTabelaHistorico() {
             const equipamentos = getEquipamentos();
             const tbody = document.querySelector('#tabelaHistorico tbody');
@@ -350,7 +423,7 @@
             tbody.innerHTML = ''; 
 
             equipamentos.forEach(equipamento => {
-                const row = tbody.insertRow();
+                const row = tbody.insertCell();
                 
                 row.insertCell().textContent = equipamento.nome;
                 row.insertCell().textContent = equipamento.patrimonio;
@@ -359,7 +432,6 @@
             });
         }
         
-        // --- Lógica da Seção de Gerenciamento (Ações/Edição) ---
         function carregarTabelaGerenciar() {
             const equipamentos = getEquipamentos();
             const tbody = document.querySelector('#tabelaGerenciar tbody');
@@ -382,13 +454,11 @@
                 `;
 
                 if (equipamento.status === 'Emprestado') {
-                    // Botões específicos para equipamento emprestado
                     acoesHtml += `
                         <button class="btn-acao btn-devolver" onclick="devolverEquipamento('${equipamento.patrimonio}', ${equipamento.id})">Devolver</button>
                         <button class="btn-acao btn-reimprimir" onclick="reimprimirTermo('${equipamento.patrimonio}')">Reimprimir Termo</button>
                     `;
                 } else if (equipamento.status === 'Estoque' || equipamento.status === 'Em Uso') {
-                    // Botão Emprestar para itens disponíveis
                     acoesHtml += `<button class="btn-acao btn-emprestar" onclick="mudarSecao('emprestimo'); document.getElementById('emprestimo_tombamento').value = '${equipamento.patrimonio}';">Emprestar</button>`;
                 }
                 
@@ -396,7 +466,7 @@
             });
         }
 
-        // --- Lógica da Seção de Cadastro (Não alterada) ---
+        // --- Lógica da Seção de Cadastro ---
         const cadastroForm = document.getElementById('cadastroForm');
         if (cadastroForm) {
             cadastroForm.addEventListener('submit', function(event) {
@@ -412,9 +482,9 @@
 
                 const novoEquipamento = {
                     id: Date.now(),
-                    nome: document.getElementById('nome').value.trim(),
+                    nome: document.getElementById('nome').value, 
                     patrimonio: patrimonio,
-                    localizacao: document.getElementById('localizacao').value.trim(),
+                    localizacao: document.getElementById('localizacao').value, 
                     status: document.getElementById('status').value,
                     obs: document.getElementById('obs').value.trim(),
                     dataCadastro: new Date().toLocaleDateString('pt-BR')
@@ -425,6 +495,7 @@
 
                 alert(`Equipamento "${novoEquipamento.nome}" cadastrado com sucesso!`);
                 cadastroForm.reset();
+                mudarSecao('cadastro'); 
             });
         }
 
@@ -441,12 +512,24 @@
                  
                  saveEquipamentos(equipamentos);
                  
+                 // Marca o empréstimo como inativo (finalizado)
+                 let emprestimos = getEmprestimos();
+                 const emprestimoIndex = emprestimos.slice().reverse().findIndex(e => e.tombamento === patrimonio && e.status === 'Ativo');
+                 
+                 if (emprestimoIndex !== -1) {
+                     const indexOriginal = emprestimos.length - 1 - emprestimoIndex;
+                     emprestimos[indexOriginal].status = 'Finalizado';
+                     emprestimos[indexOriginal].dataDevolucao = new Date().toLocaleString('pt-BR');
+                     saveEmprestimos(emprestimos);
+                 }
+
+
                  alert(`Devolução do equipamento ${patrimonio} registrada. Status atualizado para ESTOQUE.`);
                  carregarTabelaGerenciar();
              }
         }
         
-        // --- Funções de Edição/Exclusão (Não alteradas) ---
+        // --- Lógica do Modal de Edição ---
         const editModal = document.getElementById('editModal');
         const editForm = document.getElementById('editForm');
         
@@ -456,9 +539,12 @@
 
             if (equipamentoSendoEditado) {
                 document.getElementById('editId').value = equipamentoSendoEditado.id;
-                document.getElementById('editNome').value = equipamentoSendoEditado.nome;
+                
+                // Popula SELECTs e seleciona o valor atual
+                populateSelect('editNome', listaNomesEquipamentos, equipamentoSendoEditado.nome);
+                populateSelect('editLocalizacao', listaLocalizacoes, equipamentoSendoEditado.localizacao);
+                
                 document.getElementById('editPatrimonio').value = equipamentoSendoEditado.patrimonio;
-                document.getElementById('editLocalizacao').value = equipamentoSendoEditado.localizacao;
                 document.getElementById('editStatus').value = equipamentoSendoEditado.status;
                 document.getElementById('editObs').value = equipamentoSendoEditado.obs;
                 
@@ -475,9 +561,9 @@
                 event.preventDefault();
 
                 if (equipamentoSendoEditado) {
-                    equipamentoSendoEditado.nome = document.getElementById('editNome').value.trim();
+                    equipamentoSendoEditado.nome = document.getElementById('editNome').value;
                     equipamentoSendoEditado.patrimonio = document.getElementById('editPatrimonio').value.trim();
-                    equipamentoSendoEditado.localizacao = document.getElementById('editLocalizacao').value.trim();
+                    equipamentoSendoEditado.localizacao = document.getElementById('editLocalizacao').value;
                     equipamentoSendoEditado.status = document.getElementById('editStatus').value;
                     equipamentoSendoEditado.obs = document.getElementById('editObs').value.trim();
 
@@ -567,15 +653,15 @@
                 
                 alert(`Empréstimo de "${equipamento.nome}" para ${nomeFuncionario} registrado com sucesso!`);
                 emprestimoForm.reset();
-                document.getElementById('emprestimo_datahora').value = new Date().toLocaleString('pt-BR'); // Resetar data
+                document.getElementById('emprestimo_datahora').value = new Date().toLocaleString('pt-BR'); 
             });
         }
         
-        // --- Função de Reimpressão (NOVA) ---
+        // --- Função de Reimpressão ---
         window.reimprimirTermo = function(tombamento) {
             const emprestimos = getEmprestimos();
             
-            // Busca o último empréstimo ativo (simplificado) com base no tombamento
+            // Busca o último empréstimo ativo (o mais recente)
             const emprestimoAtual = emprestimos.slice().reverse().find(e => e.tombamento === tombamento && e.status === 'Ativo');
 
             if (emprestimoAtual) {
@@ -585,11 +671,12 @@
             }
         };
 
-        // --- Função de Impressão (Geral) ---
+        // --- Função de Impressão (Geral - ATUALIZADA com cabeçalho) ---
         function gerarImpressao(dadosEmprestimo) {
             const termoHtml = `
                 <div class="termo-impressao" style="padding: 30px; line-height: 1.8;">
-                    <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; color: #000;">TERMO DE EMPRÉSTIMO DE EQUIPAMENTO</h2>
+                    <div class="cabecalho-print">SENAC - PAULISTA</div>
+                    <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; color: #000; margin-top: 5px;">TERMO DE EMPRÉSTIMO DE EQUIPAMENTO</h2>
 
                     <p>Eu, <strong>${dadosEmprestimo.funcionario.toUpperCase()}</strong>, Matrícula <strong>${dadosEmprestimo.matricula}</strong>, Cargo/Ocupação <strong>${dadosEmprestimo.ocupacao.toUpperCase()}</strong>, declaro ter recebido o seguinte equipamento em regime de empréstimo:</p>
                     
@@ -597,7 +684,7 @@
                         <tr>
                             <th style="border: 1px solid #000; padding: 10px; background-color: #f0f0f0;">Equipamento</th>
                             <th style="border: 1px solid #000; padding: 10px; background-color: #f0f0f0;">Nº de Tombamento</th>
-                            <th style="border: 1px solid #000; padding: 10px; background-color: #f0f0f0;">Data Prevista de Devolução</th>
+                            <th style="border: 1px solid #000; padding: 10px; background-color: #f0f0f0;">Previsão de Devolução</th>
                         </tr>
                         <tr>
                             <td style="border: 1px solid #000; padding: 10px;">${dadosEmprestimo.nome}</td>
@@ -613,7 +700,7 @@
                     <table style="width: 100%;">
                         <tr>
                             <td style="width: 50%; text-align: center; padding: 40px 0; border-top: 1px solid #000;">
-                                Assinatura do Funcionário
+                                Assinatura do Funcionário (Empréstimo)
                             </td>
                             <td style="width: 50%; text-align: center; padding: 40px 0; border-top: 1px solid #000;">
                                 Assinatura do Responsável (TI/Estoque)
@@ -621,13 +708,32 @@
                         </tr>
                     </table>
 
-                    <p style="text-align: right; margin-top: 30px; font-size: 0.9em;">Emissão: ${dadosEmprestimo.dataEmprestimo}</p>
+                    <p style="text-align: right; margin-top: 20px; font-size: 0.9em;">Emissão: ${dadosEmprestimo.dataEmprestimo}</p>
+                    
+                    <br><br>
+                    
+                    <div class="assinaturas-devolucao">
+                        <h3 style="text-align: center; color: #000; margin-bottom: 25px;">REGISTRO DE DEVOLUÇÃO</h3>
+                        <p>Declaro que o equipamento foi devolvido na data: _____ / _____ / _________ </p>
+                        <p>Observações sobre o estado do equipamento (se houver): ____________________________________________________________________</p>
+                        <br>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 50%; text-align: center; padding: 40px 0; border-top: 1px solid #000;">
+                                    Assinatura do Funcionário (Devolução)
+                                </td>
+                                <td style="width: 50%; text-align: center; padding: 40px 0; border-top: 1px solid #000;">
+                                    Assinatura do Responsável (Recebimento)
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             `;
 
             const printWindow = window.open('', '', 'height=700,width=800');
             printWindow.document.write('<html><head><title>Termo de Empréstimo</title>');
-            printWindow.document.write('<style>@media print { body{ margin: 0; } .termo-impressao{ font-family: \'Times New Roman\', serif; } }</style>');
+            printWindow.document.write('<style>@media print { body{ margin: 0; } .termo-impressao{ font-family: \'Times New Roman\', serif; } .assinaturas-devolucao{ margin-top: 50px; border-top: 2px solid #000; padding-top: 20px; } .assinaturas-devolucao p { margin: 5px 0; } .cabecalho-print { text-align: center; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; } /* MARCA D\'ÁGUA */ .termo-impressao::before { content: "SENAC PAULISTA"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 4em; color: rgba(0, 0, 0, 0.08); pointer-events: none; white-space: nowrap; z-index: -1; } }</style>');
             printWindow.document.write('</head><body>');
             printWindow.document.write(termoHtml);
             printWindow.document.write('</body></html>');
