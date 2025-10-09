@@ -1,7 +1,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Controle de Equipamentos - V5 (Ocupação Adicionada)</title>
+    <title>Sistema de Controle de Equipamentos - V6 (Reimprimir Termo)</title>
     <style>
         /* Estilos Comuns e Reset */
         body { 
@@ -101,6 +101,7 @@
         .btn-excluir { background-color: #dc3545; } /* Vermelho */
         .btn-emprestar { background-color: #007bff; } /* Azul */
         .btn-devolver { background-color: #20c997; } /* Verde Água */
+        .btn-reimprimir { background-color: #6c757d; } /* Cinza (Reimprimir) */
 
         /* Cores de Status na Tabela */
         .status-cell { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; }
@@ -381,8 +382,13 @@
                 `;
 
                 if (equipamento.status === 'Emprestado') {
-                    acoesHtml += `<button class="btn-acao btn-devolver" onclick="devolverEquipamento('${equipamento.patrimonio}', ${equipamento.id})">Devolver</button>`;
+                    // Botões específicos para equipamento emprestado
+                    acoesHtml += `
+                        <button class="btn-acao btn-devolver" onclick="devolverEquipamento('${equipamento.patrimonio}', ${equipamento.id})">Devolver</button>
+                        <button class="btn-acao btn-reimprimir" onclick="reimprimirTermo('${equipamento.patrimonio}')">Reimprimir Termo</button>
+                    `;
                 } else if (equipamento.status === 'Estoque' || equipamento.status === 'Em Uso') {
+                    // Botão Emprestar para itens disponíveis
                     acoesHtml += `<button class="btn-acao btn-emprestar" onclick="mudarSecao('emprestimo'); document.getElementById('emprestimo_tombamento').value = '${equipamento.patrimonio}';">Emprestar</button>`;
                 }
                 
@@ -422,7 +428,7 @@
             });
         }
 
-        // --- Funções de Devolução (Não alterada) ---
+        // --- Funções de Devolução ---
         window.devolverEquipamento = function(patrimonio, id) {
              if (!confirm(`Confirmar devolução do equipamento Tombamento: ${patrimonio}?`)) return;
 
@@ -440,7 +446,7 @@
              }
         }
         
-        // --- Lógica do Modal de Edição/Exclusão (Não alterada) ---
+        // --- Funções de Edição/Exclusão (Não alteradas) ---
         const editModal = document.getElementById('editModal');
         const editForm = document.getElementById('editForm');
         
@@ -501,7 +507,7 @@
             }
         }
         
-        // --- Lógica da Seção de Empréstimo (Atualizada) ---
+        // --- Lógica da Seção de Empréstimo (Registro) ---
         
         const emprestimoForm = document.getElementById('emprestimoForm');
         if (emprestimoForm) {
@@ -511,7 +517,7 @@
                 const tombamento = document.getElementById('emprestimo_tombamento').value.trim();
                 const nomeFuncionario = document.getElementById('emprestimo_nome').value.trim();
                 const matricula = document.getElementById('emprestimo_matricula').value.trim();
-                const ocupacao = document.getElementById('emprestimo_ocupacao').value.trim(); // NOVO CAMPO
+                const ocupacao = document.getElementById('emprestimo_ocupacao').value.trim();
                 const dataHora = document.getElementById('emprestimo_datahora').value;
                 const previsaoDevolucao = document.getElementById('emprestimo_previsao').value;
                 
@@ -540,7 +546,7 @@
                     nome: equipamento.nome,
                     funcionario: nomeFuncionario,
                     matricula: matricula,
-                    ocupacao: ocupacao, // SALVANDO OCUPAÇÃO
+                    ocupacao: ocupacao,
                     dataEmprestimo: dataHora,
                     previsaoDevolucao: previsaoDevolucao,
                     status: 'Ativo'
@@ -565,8 +571,21 @@
             });
         }
         
-        // --- Função de Impressão (Atualizada) ---
+        // --- Função de Reimpressão (NOVA) ---
+        window.reimprimirTermo = function(tombamento) {
+            const emprestimos = getEmprestimos();
+            
+            // Busca o último empréstimo ativo (simplificado) com base no tombamento
+            const emprestimoAtual = emprestimos.slice().reverse().find(e => e.tombamento === tombamento && e.status === 'Ativo');
 
+            if (emprestimoAtual) {
+                gerarImpressao(emprestimoAtual);
+            } else {
+                alert(`Erro: Não foi encontrado um registro de empréstimo ATIVO para o tombamento ${tombamento}.`);
+            }
+        };
+
+        // --- Função de Impressão (Geral) ---
         function gerarImpressao(dadosEmprestimo) {
             const termoHtml = `
                 <div class="termo-impressao" style="padding: 30px; line-height: 1.8;">
