@@ -416,10 +416,28 @@
             return `<span class="status-cell ${statusClass}">${status}</span>`;
         }
 
+        // --- FUNÇÃO AUXILIAR PARA PARSEAR DATAS COM HORAS ---
+        // Converte a string "DD/MM/YYYY HH:MM:SS" em um objeto Date para comparação
+        const parseLocalToDate = (localString) => {
+            if (!localString) return new Date(0); 
+            
+            // Expected format: DD/MM/YYYY HH:MM:SS
+            const parts = localString.split(' ');
+            const datePart = parts[0];
+            // Garante que haja tempo, mesmo que seja 00:00:00
+            const timePart = parts[1] || '00:00:00'; 
+
+            const [day, month, year] = datePart.split('/').map(Number);
+            const [hour, minute, second] = timePart.split(':').map(Number);
+
+            // Date constructor uses YYYY, MM-1, DD, HH, MM, SS
+            return new Date(year, month - 1, day, hour, minute, second);
+        };
+
         // --- Lógica das Tabelas (Histórico e Gerenciar) ---
         function carregarTabelaHistorico() {
             const equipamentos = getEquipamentos();
-            const emprestimos = getEmprestimos(); // Pega todos os empréstimos
+            const emprestimos = getEmprestimos(); 
             const tbody = document.querySelector('#tabelaHistorico tbody');
             if (!tbody) return; 
 
@@ -428,28 +446,29 @@
             equipamentos.forEach(equipamento => {
                 const row = tbody.insertRow();
                 
-                // 1. Encontrar a Última Movimentação
-                // Filtra empréstimos por este equipamento
+                // 1. Encontrar a Última Movimentação (com hora)
                 const movimentos = emprestimos.filter(e => e.tombamento === equipamento.patrimonio);
                 
-                let dataUltimaAtualizacao = equipamento.dataCadastro; // Começa com a data de cadastro
+                let dataUltimaAtualizacao = equipamento.dataCadastro;
+                let ultimaDataEmMilisegundos = parseLocalToDate(equipamento.dataCadastro).getTime();
 
-                // Verifica se há um empréstimo ou devolução mais recente
                 if (movimentos.length > 0) {
                     movimentos.forEach(mov => {
-                        // Compara a data de empréstimo (Emissão)
+                        
+                        // Comparar data de Empréstimo
                         if (mov.dataEmprestimo) {
-                            const dataEmprestimo = new Date(mov.dataEmprestimo);
-                            const dataCadastro = new Date(dataUltimaAtualizacao.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'));
-                            if (dataEmprestimo > dataCadastro) {
+                            const dataMovimento = parseLocalToDate(mov.dataEmprestimo);
+                            if (dataMovimento.getTime() > ultimaDataEmMilisegundos) {
+                                ultimaDataEmMilisegundos = dataMovimento.getTime();
                                 dataUltimaAtualizacao = mov.dataEmprestimo;
                             }
                         }
-                        // Compara a data de devolução (Finalizado)
+                        
+                        // Comparar data de Devolução
                         if (mov.dataDevolucao) {
-                            const dataDevolucao = new Date(mov.dataDevolucao);
-                            const dataAtualizacao = new Date(dataUltimaAtualizacao);
-                            if (dataDevolucao > dataAtualizacao) {
+                            const dataMovimento = parseLocalToDate(mov.dataDevolucao);
+                            if (dataMovimento.getTime() > ultimaDataEmMilisegundos) {
+                                ultimaDataEmMilisegundos = dataMovimento.getTime();
                                 dataUltimaAtualizacao = mov.dataDevolucao;
                             }
                         }
@@ -461,7 +480,7 @@
                 row.insertCell().textContent = equipamento.patrimonio;
                 row.insertCell().innerHTML = getStatusHtml(equipamento.status);
                 row.insertCell().textContent = equipamento.localizacao;
-                // Exibe a data de última atualização (com hora, se houver)
+                // Exibe a data e hora de última atualização
                 row.insertCell().textContent = dataUltimaAtualizacao; 
             });
         }
@@ -521,7 +540,7 @@
                     localizacao: document.getElementById('localizacao').value, 
                     status: document.getElementById('status').value,
                     obs: document.getElementById('obs').value.trim(),
-                    // Data de Cadastro agora é com hora
+                    // Data de Cadastro agora é com hora (solução para o pedido do usuário)
                     dataCadastro: new Date().toLocaleString('pt-BR') 
                 };
 
@@ -542,27 +561,29 @@
              let equipamento = equipamentos.find(e => e.id === id);
              
              if (equipamento) {
+                 const dataHoraDevolucao = new Date().toLocaleString('pt-BR');
+                 
                  equipamento.status = 'Estoque';
                  equipamento.localizacao = 'Estoque Principal';
+                 equipamento.dataCadastro = dataHoraDevolucao; // Atualiza data de última movimentação
                  
                  saveEquipamentos(equipamentos);
                  
                  // Marca o empréstimo como inativo (finalizado)
                  let emprestimos = getEmprestimos();
-                 // Busca o último empréstimo ATIVO para este tombamento
                  const emprestimoIndex = emprestimos.slice().reverse().findIndex(e => e.tombamento === patrimonio && e.status === 'Ativo');
                  
                  if (emprestimoIndex !== -1) {
                      const indexOriginal = emprestimos.length - 1 - emprestimoIndex;
                      emprestimos[indexOriginal].status = 'Finalizado';
-                     emprestimos[indexOriginal].dataDevolucao = new Date().toLocaleString('pt-BR');
+                     emprestimos[indexOriginal].dataDevolucao = dataHoraDevolucao; // Data e hora completa
                      saveEmprestimos(emprestimos);
                  }
 
 
                  alert(`Devolução do equipamento ${patrimonio} registrada. Status atualizado para ESTOQUE.`);
                  carregarTabelaGerenciar();
-                 carregarTabelaHistorico(); // Atualiza o histórico
+                 carregarTabelaHistorico(); 
              }
         }
         
@@ -598,7 +619,6 @@
                 event.preventDefault();
 
                 if (equipamentoSendoEditado) {
-                    // Se o status mudar, atualizamos a data de atualização
                     const statusAntigo = equipamentoSendoEditado.status;
                     const statusNovo = document.getElementById('editStatus').value;
                     
@@ -608,11 +628,9 @@
                     equipamentoSendoEditado.status = statusNovo;
                     equipamentoSendoEditado.obs = document.getElementById('editObs').value.trim();
 
-                    if (statusAntigo !== statusNovo) {
-                         // Adiciona a data/hora da última alteração de status/localização
-                        equipamentoSendoEditado.dataCadastro = new Date().toLocaleString('pt-BR'); 
-                    }
-
+                    // Atualiza a data/hora da última alteração de status/localização
+                    equipamentoSendoEditado.dataCadastro = new Date().toLocaleString('pt-BR'); 
+                    
                     const equipamentos = getEquipamentos();
                     const index = equipamentos.findIndex(e => e.id === equipamentoSendoEditado.id);
                     
@@ -621,7 +639,7 @@
                         saveEquipamentos(equipamentos);
                         
                         carregarTabelaGerenciar();
-                        carregarTabelaHistorico(); // Atualiza o histórico
+                        carregarTabelaHistorico(); 
                         fecharModal();
                         alert('Equipamento atualizado com sucesso!');
                     }
@@ -636,7 +654,7 @@
                 
                 saveEquipamentos(equipamentos);
                 carregarTabelaGerenciar(); 
-                carregarTabelaHistorico(); // Atualiza o histórico
+                carregarTabelaHistorico(); 
                 alert('Equipamento excluído.');
             }
         }
@@ -703,8 +721,8 @@
                 alert(`Empréstimo de "${equipamento.nome}" para ${nomeFuncionario} registrado com sucesso!`);
                 emprestimoForm.reset();
                 document.getElementById('emprestimo_datahora').value = new Date().toLocaleString('pt-BR'); 
-                carregarTabelaHistorico(); // Atualiza o histórico
-                carregarTabelaGerenciar(); // Atualiza as ações
+                carregarTabelaHistorico(); 
+                carregarTabelaGerenciar(); 
             });
         }
         
@@ -724,9 +742,7 @@
 
         // --- Função de Impressão (Geral) ---
         function gerarImpressao(dadosEmprestimo) {
-            // Formata a data de previsão (que é só data) para exibição
             const dataPrevisaoFormatada = new Date(dadosEmprestimo.previsaoDevolucao + 'T00:00:00').toLocaleDateString('pt-BR');
-            // A data de empréstimo já é armazenada com hora
             const dataEmprestimoFormatada = dadosEmprestimo.dataEmprestimo;
             
             const termoHtml = `
