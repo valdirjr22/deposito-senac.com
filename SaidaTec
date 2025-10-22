@@ -3,13 +3,16 @@
     <meta charset="UTF-8">
     <title>SENAC - PAULISTA | Controle de Equipamentos e Materiais</title>
     <style>
-        /* Variáveis de Cores SENAC/Sistema */
+        /* Variáveis de Cores SENAC/Sistema (Melhoradas) */
         :root {
-            --primary-blue: #0056b3; /* Azul Escuro */
+            --primary-blue: #004c99; /* Azul SENAC mais rico */
             --secondary-orange: #ff6600; /* Laranja SENAC */
             --light-bg: #f8f9fa; /* Branco Sujo / Off-White */
             --white: #ffffff;
             --text-dark: #343a40;
+            --shadow-subtle: 0 10px 20px rgba(0, 0, 0, 0.08); /* Sombra mais moderna */
+            --border-color-light: #e9ecef;
+            --sidebar-bg: #f4f4f8; /* Novo fundo para o menu vertical */
         }
 
         /* Estilos Comuns e Reset */
@@ -20,105 +23,165 @@
             background-color: var(--light-bg); 
             color: var(--text-dark);
         }
+        /* Container Geral (para o cabeçalho) */
         .container { 
             background-color: var(--white); 
             padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1); 
-            margin: 30px auto; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow-subtle); 
+            margin: 30px auto 20px auto; /* Ajuste na margem inferior */
             max-width: 1000px;
         }
+
+        /* NOVO LAYOUT VERTICAL: Container principal para navegação e conteúdo */
+        .main-layout-vertical {
+            display: grid;
+            grid-template-columns: 220px 1fr; /* 220px para o menu vertical */
+            max-width: 1000px;
+            margin: 0 auto 30px auto;
+            background-color: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-subtle);
+            min-height: 70vh; /* Garante que o menu tenha altura suficiente */
+            overflow: hidden;
+        }
+
+        /* Area de Conteúdo */
+        .content-wrapper {
+            padding: 20px 30px 30px 30px; 
+            overflow-y: auto; /* Permite scroll no conteúdo se for muito longo */
+        }
+        
+        /* Estilos para a Imagem de Cabeçalho */
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .about-image {
+            margin-bottom: 15px;
+        }
+
+        .about-image img {
+            max-width: 150px;
+            height: auto;
+        }
+        
         h1 { 
             color: var(--primary-blue);
             text-align: center; 
             margin-bottom: 25px; 
-            border-bottom: 3px solid var(--secondary-orange); /* Destaque Laranja */
-            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-orange); 
+            padding-bottom: 8px;
+            margin-top: 0;
+            font-size: 1.8em;
         }
         h2 {
             color: var(--primary-blue);
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid var(--border-color-light);
             padding-bottom: 10px;
+            font-size: 1.4em;
         }
         
-        /* Estilos de Formulário */
+        /* Estilos de Formulário (Inalterados) */
         label { display: block; margin-top: 15px; font-weight: 600; color: var(--text-dark); }
         input, select, textarea { 
-            width: 100%; padding: 10px; margin-top: 5px; 
+            width: 100%; padding: 12px; margin-top: 5px; 
             box-sizing: border-box; border: 1px solid #ced4da; 
-            border-radius: 6px;
+            border-radius: 8px; 
             transition: border-color 0.3s;
         }
         input:focus, select:focus, textarea:focus {
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.2); 
             outline: none;
         }
         
-        /* Estilos dos Botões Principais */
+        /* Estilos dos Botões Principais (Inalterados) */
         .btn-principal { 
-            background-color: var(--secondary-orange); /* Laranja SENAC */
-            color: white; padding: 12px 20px; 
-            border: none; border-radius: 6px; cursor: pointer; 
+            background-color: var(--secondary-orange); 
+            color: white; padding: 14px 25px; 
+            border: none; border-radius: 8px; 
+            cursor: pointer; 
             margin-top: 20px; font-size: 16px; 
             font-weight: bold;
-            transition: background-color 0.3s, transform 0.1s; 
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s; 
+            width: auto; /* Revertendo para auto, exceto quando necessário */
         }
-        .btn-principal:hover { background-color: #e65c00; transform: translateY(-1px); }
+        .btn-principal:hover { 
+            background-color: #e65c00; 
+            transform: translateY(-1px); 
+            box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+        }
 
-        /* Estilos dos Botões de Navegação (Aba) */
-        .nav-bar { 
+        /* Estilos dos Botões de Navegação (Menu Vertical Aprimorado) */
+        .nav-bar-vertical { 
             display: flex; 
-            justify-content: flex-start; 
-            margin-bottom: 0;
-            border-bottom: 2px solid #dee2e6;
-            overflow-x: auto; 
-            white-space: nowrap;
+            flex-direction: column; /* Vertical */
+            padding: 20px 0;
+            border-right: 1px solid var(--border-color-light); /* Separador visual */
+            background-color: var(--sidebar-bg); 
+            border-radius: 16px 0 0 16px; 
+            gap: 2px;
         }
         .nav-button { 
-            background-color: var(--light-bg); 
+            background-color: transparent; 
             color: var(--primary-blue); 
-            padding: 10px 20px; 
-            border: 1px solid #dee2e6; 
-            border-bottom: none;
-            border-radius: 6px 6px 0 0; 
+            padding: 12px 20px; 
+            border: none;
+            border-left: 5px solid transparent; /* Onde o indicador de aba ativa aparecerá */
+            border-radius: 0; 
             cursor: pointer; 
-            margin-left: 5px; 
             font-weight: 600;
-            transition: background-color 0.3s, color 0.3s; 
+            text-align: left;
+            transition: background-color 0.3s, color 0.3s, border-left-color 0.3s; 
             font-size: 0.95em; 
         }
-        .nav-button:hover:not(.active) { background-color: #e9ecef; }
+        .nav-button:hover:not(.active) { 
+            background-color: #e9ecef; 
+            color: var(--text-dark);
+        }
         .nav-button.active { 
             background-color: var(--white); 
-            color: var(--secondary-orange); /* Laranja na aba ativa */
-            border-bottom: 2px solid var(--white); 
-            margin-bottom: -2px; 
+            color: var(--secondary-orange); 
+            border-left: 5px solid var(--secondary-orange); /* Destaque vertical */
+            font-weight: 700;
         }
 
-        /* Estilos da Tabela */
+        /* Estilos da Tabela (Inalterados) */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; font-size: 0.9em; }
-        th { background-color: var(--light-bg); color: var(--primary-blue); font-weight: 700; }
+        th, td { border: 1px solid #dee2e6; padding: 14px 12px; text-align: left; font-size: 0.9em; }
+        th { background-color: #e9ecef; color: var(--primary-blue); font-weight: 700; }
         
-        /* Estilos dos botões de ação na tabela */
-        .btn-acao { 
-            padding: 6px 10px; margin: 3px; border: none; 
-            border-radius: 4px; cursor: pointer; color: white; 
-            font-size: 0.85em; font-weight: 600;
-            transition: opacity 0.2s;
+        /* Zebra-striping para melhor legibilidade */
+        table tbody tr:nth-child(even) {
+            background-color: #fcfcfc;
         }
-        .btn-acao:hover { opacity: 0.8; }
+        table tbody tr:hover {
+            background-color: #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        
+        /* Outros estilos (botões de ação, status, modal) permanecem os mesmos */
+        .btn-acao { 
+            padding: 7px 12px; margin: 3px; border: none; 
+            border-radius: 6px; cursor: pointer; color: white; 
+            font-size: 0.8em; font-weight: 600;
+            transition: background-color 0.2s, filter 0.2s;
+        }
+        .btn-acao:hover { opacity: 1.0; filter: brightness(0.95); } 
         .btn-editar { background-color: #ffc107; color: #333; } 
         .btn-excluir { background-color: #dc3545; } 
         .btn-emprestar { background-color: var(--primary-blue); } 
         .btn-devolver { background-color: #20c997; } 
         .btn-reimprimir { background-color: #6c757d; } 
         .btn-visualizar { background-color: #17a2b8; } 
-        .btn-limpar-busca { background-color: #6c757d; } /* Botão Limpar Busca */
+        .btn-limpar-busca { background-color: #6c757d; } 
 
-        /* Cores de Status na Tabela */
-        .status-cell { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; }
+        /* Cores de Status na Tabela (Melhor Contraste) */
+        .status-cell { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; font-size: 0.9em; }
         .status-estoque { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; } 
         .status-emprestado { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; } 
         .status-manutencao, .status-em-andamento { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; } 
@@ -127,19 +190,20 @@
         .status-emuso { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; } 
 
         /* Esconder seções inicialmente */
-        #secaoHistorico, #secaoGerenciar, #secaoEmprestimo, #secaoManutencao, #secaoOrdensManutencao { display: none; }
-
-        /* Modal e Impressão (Manteve-se) */
+        .content-section { display: none; }
+        
+        /* Estilos para o Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 25px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 80%; max-width: 550px; border-radius: 8px; }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 30px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 80%; max-width: 600px; border-radius: 12px; } 
         .close { color: #aaa; float: right; font-size: 32px; font-weight: bold; }
         .close:hover, .close:focus { color: #333; text-decoration: none; cursor: pointer; }
 
         
         /* Estilos de Impressão */
         @media print {
+            /* Os estilos de impressão permanecem inalterados */
             body { background: none; }
-            .container, .nav-bar, .modal { display: none !important; }
+            .container, .main-layout-vertical, .modal { display: none !important; }
             .termo-impressao {
                 font-family: 'Times New Roman', serif;
                 padding: 15px; 
@@ -178,10 +242,18 @@
 </head>
 <body>
 
-    <div class="container" style="padding-bottom: 0; margin-bottom: 0; max-width: 900px;">
-        <h1>Controle de Equipamentos e Materiais - SENAC - PAULISTA</h1>
-
-        <div class="nav-bar">
+    <div class="container" style="padding-bottom: 30px; margin-bottom: 20px; max-width: 1000px;">
+        <div class="header-content">
+            <div class="about-image">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Senac_logo.svg" alt="Logo SENAC">
+            </div>
+            <h1>Controle de Equipamentos e Materiais - SENAC - PAULISTA</h1>
+        </div>
+    </div>
+    
+    <div class="main-layout-vertical">
+        
+        <div class="nav-bar-vertical">
             <button class="nav-button active" id="btnCadastro" onclick="mudarSecao('cadastro')">
                 Cadastro
             </button>
@@ -195,165 +267,170 @@
                 Empréstimo
             </button>
             <button class="nav-button" id="btnManutencao" onclick="mudarSecao('manutencao')">
-                Saída para Manutenção
+                Saída p/ Manutenção
             </button>
              <button class="nav-button" id="btnOrdensManutencao" onclick="mudarSecao('ordensManutencao')">
                 Ordens de Manutenção
             </button>
         </div>
-    </div>
 
-    <div class="container" id="secaoCadastro" style="max-width: 600px;">
-        <h2>Cadastrar Novo Equipamento</h2>
-        <form id="cadastroForm">
-            <label for="nome">Nome do Equipamento:</label>
-            <select id="nome" required>
-                </select>
+        <div class="content-wrapper">
 
-            <label for="patrimonio">Nº de Tombamento/Série (Chave Única):</label>
-            <input type="text" id="patrimonio" required placeholder="Ex: PATR-00123 ou Serial XYZ">
-
-            <label for="localizacao">Localização Inicial:</label>
-            <select id="localizacao" required>
-                </select>
-            
-            <label for="status">Status:</label>
-            <select id="status" required>
-                <option value="Em Uso">Em Uso</option>
-                <option value="Estoque" selected>Estoque</option>
-                <option value="Manutenção">Manutenção</option>
-                <option value="Baixado">Baixado</option>
-            </select>
-
-            <label for="obs">Observações:</label>
-            <textarea id="obs" rows="3"></textarea>
-
-            <button type="submit" class="btn-principal">Cadastrar Equipamento</button>
-        </form>
-    </div>
-
-    <div class="container" id="secaoHistorico" style="max-width: 900px;">
-        <h2>Visualização do Histórico de Equipamentos</h2>
-        <table id="tabelaHistorico">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Tombamento</th>
-                    <th>Status</th>
-                    <th>Localização Atual</th>
-                    <th>Última Atualização</th> 
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
+            <div class="content-section" id="secaoCadastro">
+                <h2>Cadastrar Novo Equipamento</h2>
+                <form id="cadastroForm">
+                    <label for="nome">Nome do Equipamento:</label>
+                    <select id="nome" required>
+                        </select>
     
-    <div class="container" id="secaoGerenciar" style="max-width: 900px;">
-        <h2>Gerenciar e Realizar Ações (Editar, Devolver, etc.)</h2>
-        
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="text" id="patrimonioBusca" placeholder="Pesquisar por Nº de Tombamento/Série..." style="flex-grow: 1; margin-top: 0;">
-            <button type="button" class="btn-principal" onclick="iniciarBuscaEquipamentos()" style="width: 150px; margin-top: 0;">Pesquisar</button>
-            <button type="button" class="btn-acao btn-limpar-busca" onclick="limparBuscaEquipamentos()" style="width: 100px; margin-top: 0;">Limpar</button>
-        </div>
-
-        <table id="tabelaGerenciar">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Tombamento</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
-
-    <div class="container" id="secaoEmprestimo" style="max-width: 600px;">
-        <h2>Registrar Empréstimo</h2>
-        <form id="emprestimoForm">
-            <label for="emprestimo_nome">Nome Completo do Funcionário:</label>
-            <input type="text" id="emprestimo_nome" required placeholder="Ex: Maria da Silva">
-
-            <label for="emprestimo_matricula">Matrícula do Funcionário:</label>
-            <input type="text" id="emprestimo_matricula" required placeholder="Ex: 12345">
-            
-            <label for="emprestimo_ocupacao">Cargo/Ocupação do Funcionário:</label>
-            <input type="text" id="emprestimo_ocupacao" required placeholder="Ex: Analista Financeiro">
-
-            <label for="emprestimo_tombamento">Nº de Tombamento do Equipamento:</label>
-            <input type="text" id="emprestimo_tombamento" required placeholder="Digite o Tombamento (PATR-00123)">
-
-            <label>Data e Hora do Empréstimo:</label>
-            <input type="text" id="emprestimo_datahora" readonly style="background-color: #f8f9fa;">
-
-            <label for="emprestimo_previsao">Previsão de Devolução (Apenas Data):</label>
-            <input type="date" id="emprestimo_previsao" required>
-
-            <button type="submit" class="btn-principal">Registrar e Imprimir Termo</button>
-        </form>
-    </div>
+                    <label for="patrimonio">Nº de Tombamento/Série (Chave Única):</label>
+                    <input type="text" id="patrimonio" required placeholder="Ex: PATR-00123 ou Serial XYZ">
     
-    <div class="container" id="secaoManutencao" style="max-width: 800px;">
-        <h2>Registrar Saída de Equipamentos para Manutenção</h2>
-        <form id="manutencaoForm">
-            <label for="manutencao_fornecedor">Fornecedor / Técnico Responsável:</label>
-            <input type="text" id="manutencao_fornecedor" required placeholder="Ex: TecService Ltda.">
+                    <label for="localizacao">Localização Inicial:</label>
+                    <select id="localizacao" required>
+                        </select>
+                    
+                    <label for="status">Status:</label>
+                    <select id="status" required>
+                        <option value="Em Uso">Em Uso</option>
+                        <option value="Estoque" selected>Estoque</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Baixado">Baixado</option>
+                    </select>
+    
+                    <label for="obs">Observações:</label>
+                    <textarea id="obs" rows="3"></textarea>
+    
+                    <button type="submit" class="btn-principal">Cadastrar Equipamento</button>
+                </form>
+            </div>
+    
+            <div class="content-section" id="secaoHistorico">
+                <h2>Visualização do Histórico de Equipamentos</h2>
+                <table id="tabelaHistorico">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tombamento</th>
+                            <th>Status</th>
+                            <th>Localização Atual</th>
+                            <th>Última Atualização</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
             
-            <label for="manutencao_previsao">Previsão de Retorno (Apenas Data):</label>
-            <input type="date" id="manutencao_previsao" required>
+            <div class="content-section" id="secaoGerenciar">
+                <h2>Gerenciar e Realizar Ações (Editar, Devolver, etc.)</h2>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="patrimonioBusca" placeholder="Pesquisar por Nº de Tombamento/Série..." style="flex-grow: 1; margin-top: 0;">
+                    <button type="button" class="btn-principal" onclick="iniciarBuscaEquipamentos()" style="width: 150px; margin-top: 0;">Pesquisar</button>
+                    <button type="button" class="btn-acao btn-limpar-busca" onclick="limparBuscaEquipamentos()" style="width: 100px; margin-top: 0; padding: 12px;">Limpar</button>
+                </div>
+    
+                <table id="tabelaGerenciar">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tombamento</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+    
+            <div class="content-section" id="secaoEmprestimo">
+                <h2>Registrar Empréstimo</h2>
+                <form id="emprestimoForm">
+                    <label for="emprestimo_nome">Nome Completo do Funcionário:</label>
+                    <input type="text" id="emprestimo_nome" required placeholder="Ex: Maria da Silva">
+    
+                    <label for="emprestimo_matricula">Matrícula do Funcionário:</label>
+                    <input type="text" id="emprestimo_matricula" required placeholder="Ex: 12345">
+                    
+                    <label for="emprestimo_ocupacao">Cargo/Ocupação do Funcionário:</label>
+                    <input type="text" id="emprestimo_ocupacao" required placeholder="Ex: Analista Financeiro">
+    
+                    <label for="emprestimo_tombamento">Nº de Tombamento do Equipamento:</label>
+                    <input type="text" id="emprestimo_tombamento" required placeholder="Digite o Tombamento (PATR-00123)">
+    
+                    <label>Data e Hora do Emprestimo:</label>
+                    <input type="text" id="emprestimo_datahora" readonly style="background-color: #f8f9fa;">
+    
+                    <label for="emprestimo_previsao">Previsão de Devolução (Apenas Data):</label>
+                    <input type="date" id="emprestimo_previsao" required>
+    
+                    <button type="submit" class="btn-principal">Registrar e Imprimir Termo</button>
+                </form>
+            </div>
             
-            <hr style="margin: 25px 0;">
-            <h3>Adicionar Equipamento(s) à Ordem</h3>
+            <div class="content-section" id="secaoManutencao">
+                <h2>Registrar Saída de Equipamentos para Manutenção</h2>
+                <form id="manutencaoForm">
+                    <label for="manutencao_fornecedor">Fornecedor / Técnico Responsável:</label>
+                    <input type="text" id="manutencao_fornecedor" required placeholder="Ex: TecService Ltda.">
+                    
+                    <label for="manutencao_previsao">Previsão de Retorno (Apenas Data):</label>
+                    <input type="date" id="manutencao_previsao" required>
+                    
+                    <hr style="margin: 25px 0;">
+                    <h3>Adicionar Equipamento(s) à Ordem</h3>
+                    
+                    <label for="manutencao_descricao_item">Descrição Específica do Problema/Serviço *</label>
+                    <textarea id="manutencao_descricao_item" rows="2" required placeholder="Ex: Reparo de tela touch e substituição da porta USB."></textarea>
+    
+                    <label for="manutencao_tombamento_item">Nº de Tombamento do Equipamento *</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="manutencao_tombamento_item" required placeholder="Digite o Tombamento (PATR-00123)" style="flex-grow: 1;">
+                        <button type="button" class="btn-principal" onclick="adicionarEquipamentoManutencao()" style="width: 150px; margin-top: 5px; padding: 12px;">Adicionar</button>
+                    </div>
+    
+                    <h4 style="margin-top: 20px;">Lista de Equipamentos nesta Ordem:</h4>
+                    <table id="tabelaItensManutencao" style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Tombamento</th>
+                                <th>Nome</th>
+                                <th>Serviço/Problema</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+    
+                    <button type="submit" class="btn-principal" style="width: 100%; margin-top: 30px;" id="btnFinalizarManutencao" disabled>Registrar Saída e Imprimir Ordem</button>
+                </form>
+            </div>
             
-            <label for="manutencao_descricao_item">Descrição Específica do Problema/Serviço *</label>
-            <textarea id="manutencao_descricao_item" rows="2" required placeholder="Ex: Reparo de tela touch e substituição da porta USB."></textarea>
-
-            <label for="manutencao_tombamento_item">Nº de Tombamento do Equipamento *</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="manutencao_tombamento_item" required placeholder="Digite o Tombamento (PATR-00123)" style="flex-grow: 1;">
-                <button type="button" class="btn-principal" onclick="adicionarEquipamentoManutencao()" style="width: 150px; margin-top: 5px;">Adicionar</button>
+            <div class="content-section" id="secaoOrdensManutencao">
+                <h2>Ordens de Saída para Manutenção Registradas</h2>
+                <table id="tabelaOrdensManutencao">
+                    <thead>
+                        <tr>
+                            <th>Ordem Nº</th>
+                            <th>Data Saída</th>
+                            <th>Fornecedor</th>
+                            <th>Total Itens</th>
+                            <th>Previsão Retorno</th>
+                            <th>Status Ordem</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
             </div>
 
-            <h4 style="margin-top: 20px;">Lista de Equipamentos nesta Ordem:</h4>
-            <table id="tabelaItensManutencao" style="margin-top: 10px;">
-                <thead>
-                    <tr>
-                        <th>Tombamento</th>
-                        <th>Nome</th>
-                        <th>Serviço/Problema</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
+        </div>
+    </div>
 
-            <button type="submit" class="btn-principal" style="width: 100%; margin-top: 30px;" id="btnFinalizarManutencao" disabled>Registrar Saída e Imprimir Ordem</button>
-        </form>
-    </div>
-    
-    <div class="container" id="secaoOrdensManutencao" style="max-width: 900px;">
-        <h2>Ordens de Saída para Manutenção Registradas</h2>
-        <table id="tabelaOrdensManutencao">
-            <thead>
-                <tr>
-                    <th>Ordem Nº</th>
-                    <th>Data Saída</th>
-                    <th>Fornecedor</th>
-                    <th>Total Itens</th>
-                    <th>Previsão Retorno</th>
-                    <th>Status Ordem</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
 
     <div id="editModal" class="modal">
         <div class="modal-content">
@@ -607,43 +684,32 @@
         // --- Função de Navegação ---
         function mudarSecao(secao) {
             // Esconde todas as seções e remove a classe 'active'
-            document.getElementById('secaoCadastro').style.display = 'none';
-            document.getElementById('secaoHistorico').style.display = 'none';
-            document.getElementById('secaoGerenciar').style.display = 'none';
-            document.getElementById('secaoEmprestimo').style.display = 'none';
-            document.getElementById('secaoManutencao').style.display = 'none'; 
-            document.getElementById('secaoOrdensManutencao').style.display = 'none'; 
+            document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
             document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
 
             // Exibe a seção solicitada
+            const secaoElement = document.getElementById(`secao${secao.charAt(0).toUpperCase() + secao.slice(1)}`);
+            const btnElement = document.getElementById(`btn${secao.charAt(0).toUpperCase() + secao.slice(1)}`);
+            
+            if (secaoElement) secaoElement.style.display = 'block';
+            if (btnElement) btnElement.classList.add('active');
+
             if (secao === 'cadastro') {
-                document.getElementById('secaoCadastro').style.display = 'block';
-                document.getElementById('btnCadastro').classList.add('active');
                 populateSelect('nome', listaNomesEquipamentos);
                 populateSelect('localizacao', listaLocalizacoes);
                 document.getElementById('status').value = 'Estoque';
             } else if (secao === 'historico') {
-                document.getElementById('secaoHistorico').style.display = 'block';
-                document.getElementById('btnHistorico').classList.add('active');
                 carregarTabelaHistorico(); 
             } else if (secao === 'gerenciar') {
-                document.getElementById('secaoGerenciar').style.display = 'block';
-                document.getElementById('btnGerenciar').classList.add('active');
                 document.getElementById('patrimonioBusca').value = ''; 
                 carregarTabelaGerenciar(); 
             } else if (secao === 'emprestimo') {
-                document.getElementById('secaoEmprestimo').style.display = 'block';
-                document.getElementById('btnEmprestimo').classList.add('active');
                 document.getElementById('emprestimo_datahora').value = new Date().toLocaleString('pt-BR');
             } else if (secao === 'manutencao') {
-                document.getElementById('secaoManutencao').style.display = 'block';
-                document.getElementById('btnManutencao').classList.add('active');
                 itensManutencaoTemp = []; 
                 atualizarTabelaItensManutencao();
                 document.getElementById('manutencaoForm').reset();
             } else if (secao === 'ordensManutencao') {
-                document.getElementById('secaoOrdensManutencao').style.display = 'block';
-                document.getElementById('btnOrdensManutencao').classList.add('active');
                 carregarTabelaOrdensManutencao();
             }
         }
